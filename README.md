@@ -16,11 +16,19 @@ Elastic-Job官方提供了基于Spring和Java代码2种方式的任务配置，�
 
 ```
 <dependency>
-			<groupId>com.cxytiandi</groupId>
-			<artifactId>elastic-job-spring-boot-starter</artifactId>
-			<version>1.0.0</version>
+	<groupId>com.cxytiandi</groupId>
+	<artifactId>elastic-job-spring-boot-starter</artifactId>
+	<version>1.0.0</version>
 </dependency>
 ```
+
+## 增加Zookeeper注册中心的配置
+
+```
+elasticJob.zk.serverLists=192.168.10.47:2181
+elasticJob.zk.namespace=cxytiandi_job2
+```
+Zookeeper配置的前缀是elasticJob.zk，详细的属性配置请查看[ZookeeperProperties](https://github.com/yinjihuan/elastic-job-spring-boot-starter/blob/master/spring-boot-elastic-job-starter/src/main/java/com/cxytiandi/elasticjob/autoconfigure/ZookeeperProperties.java)
 
 ## 开启Elastic-Job自动配置
 
@@ -54,3 +62,29 @@ public class JobApplication {
 	
 }
 ```
+
+## 配置任务
+
+```
+@ElasticJobConf(name = "MySimpleJob", cron = "0/10 * * * * ?", 
+	shardingItemParameters = "0=0,1=1", description = "简单任务")
+public class MySimpleJob implements SimpleJob {
+
+	public void execute(ShardingContext context) {
+		System.out.println(2/0);
+		String shardParamter = context.getShardingParameter();
+		System.out.println("分片参数："+shardParamter);
+		int value = Integer.parseInt(shardParamter);
+		for (int i = 0; i < 1000000; i++) {
+			if (i % 2 == value) {
+				String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
+				System.out.println(time + ":开始执行简单任务" + i);
+			}
+		}
+	}
+
+}
+```
+任务的配置只需要在任务类上增加一个ElasticJobConf注解，注解中有很多属性，这些属性都是任务的配置，详细的属性配置请查看[ElasticJobConf](https://github.com/yinjihuan/elastic-job-spring-boot-starter/blob/master/spring-boot-elastic-job-starter/src/main/java/com/cxytiandi/elasticjob/annotation/ElasticJobConf.java)
+		
+到此为止，我们就快速的使用注解发布了一个任务，DataflowJob和ScriptJob的使用方式一样。
