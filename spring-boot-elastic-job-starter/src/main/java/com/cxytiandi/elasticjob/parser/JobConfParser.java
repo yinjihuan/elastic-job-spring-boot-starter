@@ -27,6 +27,8 @@ import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.dataflow.DataflowJobConfiguration;
 import com.dangdang.ddframe.job.config.script.ScriptJobConfiguration;
 import com.dangdang.ddframe.job.config.simple.SimpleJobConfiguration;
+import com.dangdang.ddframe.job.event.rdb.JobEventRdbConfiguration;
+import com.dangdang.ddframe.job.executor.handler.JobProperties.JobPropertiesEnum;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
 import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
 import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
@@ -67,6 +69,8 @@ public class JobConfParser implements ApplicationContextAware {
 			String description = getEnvironmentStringValue(jobName, JobAttributeTag.DESCRIPTION, conf.description());
 			String jobParameter = getEnvironmentStringValue(jobName, JobAttributeTag.JOB_PARAMETER, conf.jobParameter());
 			String jobExceptionHandler = getEnvironmentStringValue(jobName, JobAttributeTag.JOB_EXCEPTION_HANDLER, conf.jobExceptionHandler());
+			String executorServiceHandler = getEnvironmentStringValue(jobName, JobAttributeTag.EXECUTOR_SERVICE_HANDLER, conf.executorServiceHandler());
+			
 			String jobShardingStrategyClass = getEnvironmentStringValue(jobName, JobAttributeTag.JOB_SHARDING_STRATEGY_CLASS, conf.jobShardingStrategyClass());
 			String eventTraceRdbDataSource = getEnvironmentStringValue(jobName, JobAttributeTag.EVENT_TRACE_RDB_DATA_SOURCE, conf.eventTraceRdbDataSource());
 			
@@ -88,8 +92,8 @@ public class JobConfParser implements ApplicationContextAware {
 					.failover(failover)
 					.jobParameter(jobParameter)
 					.misfire(misfire)
-					.jobProperties(JobAttributeTag.JOB_EXCEPTION_HANDLER, jobExceptionHandler)
-					.jobProperties(JobAttributeTag.EXECUTOR_SERVICE_HANDLER, jobExceptionHandler)
+					.jobProperties(JobPropertiesEnum.JOB_EXCEPTION_HANDLER.getKey(), jobExceptionHandler)
+					.jobProperties(JobPropertiesEnum.EXECUTOR_SERVICE_HANDLER.getKey(), executorServiceHandler)
 					.build();
 			
 			LiteJobConfiguration jobConfig = null;
@@ -141,8 +145,9 @@ public class JobConfParser implements ApplicationContextAware {
             
             // 任务执行日志数据源，以名称获取
             if (StringUtils.hasText(eventTraceRdbDataSource)) {
-            	DataSource dataSource = (DataSource) ctx.getBean(eventTraceRdbDataSource);
-            	factory.addConstructorArgValue(dataSource);
+            	BeanDefinitionBuilder rdbFactory = BeanDefinitionBuilder.rootBeanDefinition(JobEventRdbConfiguration.class);
+            	rdbFactory.addConstructorArgReference(eventTraceRdbDataSource);
+            	factory.addConstructorArgValue(rdbFactory.getBeanDefinition());
 			}
             
             factory.addConstructorArgValue(elasticJobListeners);
