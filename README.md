@@ -140,3 +140,8 @@ public class BeanConfig {
 @ElasticJobConf(name = "MySimpleJob", cron = "0/10 * * * * ?", 
 	shardingItemParameters = "0=0,1=1", description = "简单任务", eventTraceRdbDataSource = "datasource")
 ```
+
+## application.properties中配置任务信息
+
+使用注解是比较方便，但很多时候我们需要不同的环境使用不同的配置，测试环境跟生产环境的配置肯定是不一样的，当然你也可以在发布之前将注解中的配置调整好然后发布。
+
