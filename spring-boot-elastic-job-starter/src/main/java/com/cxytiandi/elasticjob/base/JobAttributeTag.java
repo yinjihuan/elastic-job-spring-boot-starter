@@ -43,4 +43,8 @@ public class JobAttributeTag {
 	public static final String EVENT_TRACE_RDB_DATA_SOURCE = "eventTraceRdbDataSource";
 
 	public static final String RECONCILE_INTERVAL_MINUTES = "reconcileIntervalMinutes";
+	
+	public static final String SCRIPT_COMMAND_LINE = "scriptCommandLine";
+	
+	public static final String STREAMING_PROCESS = "streamingProcess";
 }

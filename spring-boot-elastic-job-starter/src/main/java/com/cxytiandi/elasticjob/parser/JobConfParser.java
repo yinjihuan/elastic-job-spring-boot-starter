@@ -4,8 +4,6 @@ package com.cxytiandi.elasticjob.parser;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -24,6 +22,7 @@ import org.springframework.util.StringUtils;
 import com.cxytiandi.elasticjob.annotation.ElasticJobConf;
 import com.cxytiandi.elasticjob.base.JobAttributeTag;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
+import com.dangdang.ddframe.job.config.JobTypeConfiguration;
 import com.dangdang.ddframe.job.config.dataflow.DataflowJobConfiguration;
 import com.dangdang.ddframe.job.config.script.ScriptJobConfiguration;
 import com.dangdang.ddframe.job.config.simple.SimpleJobConfiguration;
@@ -73,18 +72,21 @@ public class JobConfParser implements ApplicationContextAware {
 			
 			String jobShardingStrategyClass = getEnvironmentStringValue(jobName, JobAttributeTag.JOB_SHARDING_STRATEGY_CLASS, conf.jobShardingStrategyClass());
 			String eventTraceRdbDataSource = getEnvironmentStringValue(jobName, JobAttributeTag.EVENT_TRACE_RDB_DATA_SOURCE, conf.eventTraceRdbDataSource());
+			String scriptCommandLine = getEnvironmentStringValue(jobName, JobAttributeTag.SCRIPT_COMMAND_LINE, conf.scriptCommandLine());
 			
 			boolean failover = getEnvironmentBooleanValue(jobName, JobAttributeTag.FAILOVER, conf.failover());
 			boolean misfire = getEnvironmentBooleanValue(jobName, JobAttributeTag.MISFIRE, conf.misfire());
 			boolean overwrite = getEnvironmentBooleanValue(jobName, JobAttributeTag.OVERWRITE, conf.overwrite());
 			boolean disabled = getEnvironmentBooleanValue(jobName, JobAttributeTag.DISABLED, conf.disabled());
 			boolean monitorExecution = getEnvironmentBooleanValue(jobName, JobAttributeTag.MONITOR_EXECUTION, conf.monitorExecution());
+			boolean streamingProcess = getEnvironmentBooleanValue(jobName, JobAttributeTag.STREAMING_PROCESS, conf.streamingProcess());
 			
 			int shardingTotalCount = getEnvironmentIntValue(jobName, JobAttributeTag.SHARDING_TOTAL_COUNT, conf.shardingTotalCount());
 			int monitorPort = getEnvironmentIntValue(jobName, JobAttributeTag.MONITOR_PORT, conf.monitorPort());
 			int maxTimeDiffSeconds = getEnvironmentIntValue(jobName, JobAttributeTag.MAX_TIME_DIFF_SECONDS, conf.maxTimeDiffSeconds());
 			int reconcileIntervalMinutes = getEnvironmentIntValue(jobName, JobAttributeTag.RECONCILE_INTERVAL_MINUTES, conf.reconcileIntervalMinutes());
 			
+			// 核心配置
 			JobCoreConfiguration coreConfig = 
 					JobCoreConfiguration.newBuilder(jobName, cron, shardingTotalCount)
 					.shardingItemParameters(shardingItemParameters)
@@ -96,50 +98,42 @@ public class JobConfParser implements ApplicationContextAware {
 					.jobProperties(JobPropertiesEnum.EXECUTOR_SERVICE_HANDLER.getKey(), executorServiceHandler)
 					.build();
 			
+			// 不同类型的任务配置处理
 			LiteJobConfiguration jobConfig = null;
-			
+			JobTypeConfiguration typeConfig = null;
 			if (jobTypeName.equals("SimpleJob")) {
-				jobConfig = LiteJobConfiguration.newBuilder(new SimpleJobConfiguration(coreConfig, jobClass))
-						.overwrite(overwrite)
-						.disabled(disabled)
-						.monitorPort(monitorPort)
-						.monitorExecution(monitorExecution)
-						.maxTimeDiffSeconds(maxTimeDiffSeconds)
-						.jobShardingStrategyClass(jobShardingStrategyClass)
-						.reconcileIntervalMinutes(reconcileIntervalMinutes)
-						.build();
+				typeConfig = new SimpleJobConfiguration(coreConfig, jobClass);
 			}
 			
 			if (jobTypeName.equals("DataflowJob")) {
-				jobConfig = LiteJobConfiguration.newBuilder(new DataflowJobConfiguration(coreConfig, jobClass, conf.streamingProcess()))
-						.overwrite(overwrite)
-						.disabled(disabled)
-						.monitorPort(monitorPort)
-						.monitorExecution(monitorExecution)
-						.maxTimeDiffSeconds(maxTimeDiffSeconds)
-						.jobShardingStrategyClass(jobShardingStrategyClass)
-						.reconcileIntervalMinutes(reconcileIntervalMinutes)
-						.build();
+				typeConfig = new DataflowJobConfiguration(coreConfig, jobClass, streamingProcess);
 			}
 
 			if (jobTypeName.equals("ScriptJob")) {
-				jobConfig = LiteJobConfiguration.newBuilder(new ScriptJobConfiguration(coreConfig, conf.scriptCommandLine()))
-						.overwrite(overwrite)
-						.disabled(disabled)
-						.monitorPort(monitorPort)
-						.monitorExecution(monitorExecution)
-						.maxTimeDiffSeconds(maxTimeDiffSeconds)
-						.jobShardingStrategyClass(jobShardingStrategyClass)
-						.reconcileIntervalMinutes(reconcileIntervalMinutes)
-						.build();
+				typeConfig = new ScriptJobConfiguration(coreConfig, scriptCommandLine);
 			}
+			
+			jobConfig = LiteJobConfiguration.newBuilder(typeConfig)
+					.overwrite(overwrite)
+					.disabled(disabled)
+					.monitorPort(monitorPort)
+					.monitorExecution(monitorExecution)
+					.maxTimeDiffSeconds(maxTimeDiffSeconds)
+					.jobShardingStrategyClass(jobShardingStrategyClass)
+					.reconcileIntervalMinutes(reconcileIntervalMinutes)
+					.build();
 		
 			List<BeanDefinition> elasticJobListeners = getTargetElasticJobListeners(conf);
 			
+			// 构建SpringJobScheduler对象来初始化任务
 			BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringJobScheduler.class);
 	        factory.setInitMethodName("init");
             factory.setScope(BeanDefinition.SCOPE_PROTOTYPE);
-            factory.addConstructorArgValue(confBean);
+            if ("ScriptJob".equals(jobTypeName)) {
+            	factory.addConstructorArgValue(null);
+            } else {
+            	factory.addConstructorArgValue(confBean);
+            }
             factory.addConstructorArgValue(zookeeperRegistryCenter);
             factory.addConstructorArgValue(jobConfig);
             
@@ -183,7 +177,7 @@ public class JobConfParser implements ApplicationContextAware {
 	}
 	 
 	/**
-	 * 获取配置中的任务属性值
+	 * 获取配置中的任务属性值，environment没有就用注解中的值
 	 * @param jobName		任务名称
 	 * @param fieldName		属性名称
 	 * @param defaultValue  默认值
