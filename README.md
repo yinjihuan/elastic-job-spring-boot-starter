@@ -145,3 +145,27 @@ public class BeanConfig {
 
 使用注解是比较方便，但很多时候我们需要不同的环境使用不同的配置，测试环境跟生产环境的配置肯定是不一样的，当然你也可以在发布之前将注解中的配置调整好然后发布。
 
+为了能够让任务的配置区分环境，还可以在属性文件中配置任务的信息，当属性文件中配置了任务的信息，优先级就比注解中的高。
+
+首先还是在任务类上加@ElasticJobConf(name = "MySimpleJob")注解，只需要增加一个name即可，任务名是唯一的。
+
+剩下的配置都可以在属性文件中进行配置，格式为elasticJob.任务名.配置属性=属性值
+
+```
+elasticJob.MySimpleJob.cron=0/10 * * * * ?
+elasticJob.MySimpleJob.overwrite=true
+elasticJob.MySimpleJob.shardingTotalCount=1
+elasticJob.MySimpleJob.shardingItemParameters=0=0,1=1
+elasticJob.MySimpleJob.jobParameter=test
+elasticJob.MySimpleJob.failover=true
+elasticJob.MySimpleJob.misfire=true
+elasticJob.MySimpleJob.description=simple job
+elasticJob.MySimpleJob.monitorExecution=false
+elasticJob.MySimpleJob.listener=com.cxytiandi.job.core.MessageElasticJobListener
+elasticJob.MySimpleJob.jobExceptionHandler=com.cxytiandi.job.core.CustomJobExceptionHandler
+elasticJob.MySimpleJob.disabled=true
+```
+
+##  Spring XML配置代码示例
+
+[https://github.com/yinjihuan/spring-cloud/tree/master/fangjia-job](https://github.com/yinjihuan/spring-cloud/tree/master/fangjia-job)
