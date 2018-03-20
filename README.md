@@ -166,6 +166,43 @@ elasticJob.MySimpleJob.jobExceptionHandler=com.cxytiandi.job.core.CustomJobExcep
 elasticJob.MySimpleJob.disabled=true
 ```
 
+## Script任务使用说明
+由于Script任务的执行逻辑是在具体的脚本中，是通过scriptCommandLine来指定执行脚本的路径。我这边为了统一的去发现项目中的任务列表，还是需要建一个脚本的Java类，加上ElasticJobConf注解，只是不需要写逻辑而已，示例如下：
+
+```
+/**
+ * 脚本任务不需要写逻辑，逻辑在被执行的脚本中，这边只是定义一个任务而已
+ * @author yinjihuan
+ *
+ */
+@ElasticJobConf(name = "MyScriptJob")
+public class MyScriptJob implements ScriptJob {
+
+	public void execute(ShardingContext context) {
+		
+	}
+
+}
+
+```
+
+配置：
+
+```
+elasticJob.MyScriptJob.cron=0/10 * * * * ?
+elasticJob.MyScriptJob.overwrite=true
+elasticJob.MyScriptJob.scriptCommandLine=D:\\apache-tomcat-addrepo-allcity\\bin\\startup.bat
+```
+
 ##  Spring XML配置代码示例
 
 [https://github.com/yinjihuan/spring-cloud/tree/master/fangjia-job](https://github.com/yinjihuan/spring-cloud/tree/master/fangjia-job)
+
+
+# 作者
+- 尹吉欢 1304489315@qq.com
+- 博客 http://cxytiandi.com/blogs/yinjihuan
+
+更多技术分享请关注微信公众号：猿天地
+
+![image.png](http://upload-images.jianshu.io/upload_images/2685774-da01a73d0cfc3f35.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
