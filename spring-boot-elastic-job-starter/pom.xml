@@ -40,5 +40,9 @@
 			<artifactId>elastic-job-lite-spring</artifactId>
 			<version>2.1.5</version>
 		</dependency>
+		 <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
 	</dependencies>
 </project>

@@ -3,6 +3,8 @@ package com.cxytiandi.job;
 import java.util.concurrent.CountDownLatch;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.ComponentScan;
+
 import com.cxytiandi.elasticjob.annotation.EnableElasticJob;
 
 /**
@@ -15,10 +17,12 @@ import com.cxytiandi.elasticjob.annotation.EnableElasticJob;
  */
 @SpringBootApplication
 @EnableElasticJob
+//开启动态任务添加API
+@ComponentScan(basePackages = {"com.cxytiandi.elasticjob.dynamic"})
 public class JobApplication {
 	
 	public static void main(String[] args) {
-		new SpringApplicationBuilder().sources(JobApplication.class).web(false).run(args);
+		new SpringApplicationBuilder().sources(JobApplication.class).web(true).run(args);
 		try {
 			new CountDownLatch(1).await();
 		} catch (InterruptedException e) {
