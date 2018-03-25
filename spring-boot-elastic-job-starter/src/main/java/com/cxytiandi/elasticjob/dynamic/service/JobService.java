@@ -2,6 +2,12 @@ package com.cxytiandi.elasticjob.dynamic.service;
 
 import java.util.List;
 
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.cache.ChildData;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache.StartMode;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +18,9 @@ import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
 import com.cxytiandi.elasticjob.dynamic.bean.Job;
+import com.cxytiandi.elasticjob.dynamic.util.JsonUtils;
 import com.cxytiandi.elasticjob.parser.JobConfParser;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.JobTypeConfiguration;
@@ -37,32 +45,31 @@ public class JobService {
 	private ApplicationContext ctx;
 	
 	public void addJob(Job job) {
-		System.out.println(ctx);
 		// 核心配置
 		JobCoreConfiguration coreConfig = 
-				JobCoreConfiguration.newBuilder(job.getName(), job.getCron(), job.getShardingTotalCount())
+				JobCoreConfiguration.newBuilder(job.getJobName(), job.getCron(), job.getShardingTotalCount())
 				.shardingItemParameters(job.getShardingItemParameters())
 				.description(job.getDescription())
 				.failover(job.isFailover())
 				.jobParameter(job.getJobParameter())
 				.misfire(job.isMisfire())
-				.jobProperties(JobPropertiesEnum.JOB_EXCEPTION_HANDLER.getKey(), job.getJobExceptionHandler())
-				.jobProperties(JobPropertiesEnum.EXECUTOR_SERVICE_HANDLER.getKey(), job.getExecutorServiceHandler())
+				.jobProperties(JobPropertiesEnum.JOB_EXCEPTION_HANDLER.getKey(), job.getJobProperties().getJobExceptionHandler())
+				.jobProperties(JobPropertiesEnum.EXECUTOR_SERVICE_HANDLER.getKey(), job.getJobProperties().getExecutorServiceHandler())
 				.build();
 		
 		// 不同类型的任务配置处理
 		LiteJobConfiguration jobConfig = null;
 		JobTypeConfiguration typeConfig = null;
-		String jobTypeName = job.getJobTypeName();
-		if (jobTypeName.equals("SimpleJob")) {
+		String jobType = job.getJobType();
+		if (jobType.equals("SIMPLE")) {
 			typeConfig = new SimpleJobConfiguration(coreConfig, job.getJobClass());
 		}
 		
-		if (jobTypeName.equals("DataflowJob")) {
+		if (jobType.equals("DATAFLOW")) {
 			typeConfig = new DataflowJobConfiguration(coreConfig, job.getJobClass(), job.isStreamingProcess());
 		}
 
-		if (jobTypeName.equals("ScriptJob")) {
+		if (jobType.equals("SCRIPT")) {
 			typeConfig = new ScriptJobConfiguration(coreConfig, job.getScriptCommandLine());
 		}
 		
@@ -82,7 +89,7 @@ public class JobService {
 		BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringJobScheduler.class);
         factory.setInitMethodName("init");
         factory.setScope(BeanDefinition.SCOPE_PROTOTYPE);
-        if ("ScriptJob".equals(jobTypeName)) {
+        if ("SCRIPT".equals(jobType)) {
         	factory.addConstructorArgValue(null);
         } else {
         	BeanDefinitionBuilder rdbFactory = BeanDefinitionBuilder.rootBeanDefinition(job.getJobClass());
@@ -103,7 +110,7 @@ public class JobService {
 		defaultListableBeanFactory.registerBeanDefinition("SpringJobScheduler", factory.getBeanDefinition());
 		SpringJobScheduler springJobScheduler = (SpringJobScheduler) ctx.getBean("SpringJobScheduler");
 		springJobScheduler.init();
-		logger.info("【" + job.getName() + "】\t" + job.getJobClass() + "\tinit success");
+		logger.info("【" + job.getJobName() + "】\t" + job.getJobClass() + "\tinit success");
 	}
 	
 	private List<BeanDefinition> getTargetElasticJobListeners(Job job) {
@@ -127,5 +134,40 @@ public class JobService {
             result.add(factory.getBeanDefinition());
         }
         return result;
+	}
+	
+	
+	public void removeJob(String jobName) throws Exception {
+		CuratorFramework client = zookeeperRegistryCenter.getClient();
+		client.delete().deletingChildrenIfNeeded().forPath("/" + jobName);
+	}
+	
+	/**
+	 * 开启任务监听,当有任务添加时，监听zk中的数据增加，自动在其他节点也初始化该任务
+	 */
+	public void monitorJobRegister() {
+		CuratorFramework client = zookeeperRegistryCenter.getClient();
+		@SuppressWarnings("resource")
+		PathChildrenCache childrenCache = new PathChildrenCache(client, "/", true);  
+	        PathChildrenCacheListener childrenCacheListener = new PathChildrenCacheListener() {  
+	            public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {  
+	                ChildData data = event.getData();  
+	                switch (event.getType()) {  
+	                case CHILD_ADDED: 
+	                	String config = new String(client.getData().forPath(data.getPath() + "/config"));
+	                	Job job = JsonUtils.toBean(Job.class, config);
+	                	addJob(job);
+	                    break;  
+	                default:  
+	                    break;  
+	                }  
+	            }  
+	        };  
+	        childrenCache.getListenable().addListener(childrenCacheListener);  
+	        try {
+				childrenCache.start(StartMode.POST_INITIALIZED_EVENT);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
 	}
 }

@@ -3,7 +3,6 @@ package com.cxytiandi.elasticjob.parser;
 
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -21,6 +20,7 @@ import org.springframework.util.StringUtils;
 
 import com.cxytiandi.elasticjob.annotation.ElasticJobConf;
 import com.cxytiandi.elasticjob.base.JobAttributeTag;
+import com.cxytiandi.elasticjob.dynamic.service.JobService;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.JobTypeConfiguration;
 import com.dangdang.ddframe.job.config.dataflow.DataflowJobConfiguration;
@@ -52,6 +52,9 @@ public class JobConfParser implements ApplicationContextAware {
 	private String prefix = "elasticJob.";
 	
 	private Environment environment;
+	
+	@Autowired(required=false)
+	private JobService jobService;
 	
 	public void setApplicationContext(ApplicationContext ctx) throws BeansException {
 		environment = ctx.getEnvironment();
@@ -151,6 +154,12 @@ public class JobConfParser implements ApplicationContextAware {
 			springJobScheduler.init();
 			logger.info("【" + jobName + "】\t" + jobClass + "\tinit success");
 		}
+		
+		//开启任务监听,当有任务添加时，监听zk中的数据增加，自动在其他节点也初始化该任务
+		if (jobService != null) {
+			jobService.monitorJobRegister();
+		}
+		
 	}
 
 	private List<BeanDefinition> getTargetElasticJobListeners(ElasticJobConf conf) {

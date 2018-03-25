@@ -11,12 +11,12 @@ public class Job {
 	 * 作业名称
 	 * @return
 	 */
-	private String name;
+	private String jobName;
 
 	/**
-	 * 作业类型（SimpleJob，DataflowJob，ScriptJob）
+	 * 作业类型（SIMPLE，DATAFLOW，SCRIPT）
 	 */
-	private String jobTypeName;
+	private String jobType;
 	
 	/**
 	 * 任务类路径
@@ -180,15 +180,7 @@ public class Job {
 	private long completedTimeoutMilliseconds = Long.MAX_VALUE;
 	
 	/**
-	 * 自定义异常处理类
-	 * @return
+	 * 扩展属性
 	 */
-	private String jobExceptionHandler = "com.dangdang.ddframe.job.executor.handler.impl.DefaultJobExceptionHandler";
-	
-	/**
-	 * 自定义业务处理线程池
-	 * @return
-	 */
-	private String executorServiceHandler = "com.dangdang.ddframe.job.executor.handler.impl.DefaultExecutorServiceHandler"; 
-	
+	private JobProperties jobProperties = new JobProperties();
 }

@@ -18,7 +18,7 @@ import com.cxytiandi.elasticjob.annotation.EnableElasticJob;
 @SpringBootApplication
 @EnableElasticJob
 //开启动态任务添加API
-@ComponentScan(basePackages = {"com.cxytiandi.elasticjob.dynamic"})
+@ComponentScan(basePackages = {"com.cxytiandi"})
 public class JobApplication {
 	
 	public static void main(String[] args) {
