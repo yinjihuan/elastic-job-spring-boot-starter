@@ -99,7 +99,7 @@ public class MySimpleJob implements SimpleJob {
 		
 到此为止，我们就快速的使用注解发布了一个任务，DataflowJob和ScriptJob的使用方式一样。
 
-使用示列参考：[elastic-job-spring-boot-example](https://github.com/yinjihuan/elastic-job-spring-boot-starter/tree/master/elastic-job-spring-boot-example)
+使用示列参考：[elastic-job-spring-boot-example](https://github.com/yinjihuan/elastic-job-spring-boot-example)
 
 ## 事件追踪功能使用
 
