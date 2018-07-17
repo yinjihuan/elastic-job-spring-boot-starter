@@ -1,6 +1,9 @@
 package com.cxytiandi.elasticjob.dynamic.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -43,6 +46,9 @@ public class JobService {
 	
 	@Autowired
 	private ApplicationContext ctx;
+	
+	// 记录任务添加次数
+	private Map<String, AtomicInteger> JOB_ADD_COUNT = new ConcurrentHashMap<String, AtomicInteger>();
 	
 	public void addJob(Job job) {
 		// 核心配置
@@ -87,7 +93,6 @@ public class JobService {
 		
 		// 构建SpringJobScheduler对象来初始化任务
 		BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringJobScheduler.class);
-        factory.setInitMethodName("init");
         factory.setScope(BeanDefinition.SCOPE_PROTOTYPE);
         if ("SCRIPT".equals(jobType)) {
         	factory.addConstructorArgValue(null);
@@ -156,7 +161,14 @@ public class JobService {
 	                case CHILD_ADDED: 
 	                	String config = new String(client.getData().forPath(data.getPath() + "/config"));
 	                	Job job = JsonUtils.toBean(Job.class, config);
-	                	addJob(job);
+	                	// 启动时任务会添加数据触发事件，这边需要去掉第一次的触发，不然在控制台进行手动触发任务会执行两次任务
+	                	if (!JOB_ADD_COUNT.containsKey(job.getJobName())) {
+	                		JOB_ADD_COUNT.put(job.getJobName(), new AtomicInteger());
+						}
+	                	int count = JOB_ADD_COUNT.get(job.getJobName()).incrementAndGet();
+	                	if (count > 1) {
+	                		addJob(job);
+						}
 	                    break;  
 	                default:  
 	                    break;  

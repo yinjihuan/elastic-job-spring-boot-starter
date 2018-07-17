@@ -130,7 +130,6 @@ public class JobConfParser implements ApplicationContextAware {
 			
 			// 构建SpringJobScheduler对象来初始化任务
 			BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringJobScheduler.class);
-	        factory.setInitMethodName("init");
             factory.setScope(BeanDefinition.SCOPE_PROTOTYPE);
             if ("ScriptJob".equals(jobTypeName)) {
             	factory.addConstructorArgValue(null);
