@@ -12,13 +12,23 @@ Elastic-Job官方提供了基于Spring和Java代码2种方式的任务配置，�
 
 ## 增加elastic-job-spring-boot-starter的Maven依赖
 
-由于目前刚开发完成，也不知道会有多少人需要使用这个Starter，Jar包暂时不传到Maven中央仓库，需要体验的同学直接下载源码编译即可依赖，等后面Star的数量多了起来之后，有比较多的人关注了这个Starter，后面我会传到Maven中央仓库供大家更方便的使用。
+目前最新版本1.0.1
 
+第一步添加仓库地址：
+```
+<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+</repositories>
+```
+第二步添加依赖：
 ```
 <dependency>
-	<groupId>com.cxytiandi</groupId>
-	<artifactId>elastic-job-spring-boot-starter</artifactId>
-	<version>1.0.0</version>
+	    <groupId>com.github.yinjihuan</groupId>
+	    <artifactId>elastic-job-spring-boot-starter</artifactId>
+	    <version>1.0.1</version>
 </dependency>
 ```
 
@@ -89,7 +99,7 @@ public class MySimpleJob implements SimpleJob {
 		
 到此为止，我们就快速的使用注解发布了一个任务，DataflowJob和ScriptJob的使用方式一样。
 
-使用示列参考：[elastic-job-spring-boot-example](https://github.com/yinjihuan/elastic-job-spring-boot-starter/tree/master/elastic-job-spring-boot-example)
+使用示列参考：[elastic-job-spring-boot-example](https://github.com/yinjihuan/elastic-job-spring-boot-example)
 
 ## 事件追踪功能使用
 
