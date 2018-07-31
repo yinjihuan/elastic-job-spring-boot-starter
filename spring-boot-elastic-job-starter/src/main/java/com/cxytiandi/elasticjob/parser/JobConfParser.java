@@ -49,7 +49,7 @@ public class JobConfParser implements ApplicationContextAware {
 	@Autowired
 	private ZookeeperRegistryCenter zookeeperRegistryCenter;
 
-	private String prefix = "elasticJob.";
+	private String prefix = "elastic.job.";
 	
 	private Environment environment;
 	
