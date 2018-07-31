@@ -1,7 +1,7 @@
 # elastic-job-spring-boot-starter介绍
 ## 注意点
-Spring Boot 1.X版本使用elastic-job-spring-boot-starter 1.0.1版本,，配置前缀为elasticJob.xxx.xxx
-Spring Boot 2.X版本使用elastic-job-spring-boot-starter 1.0.2版本，配置前缀为elastic.job.xxx.xxx
+>Spring Boot 1.X版本使用elastic-job-spring-boot-starter 1.0.1版本,，配置前缀为elasticJob.xxx.xxx
+>Spring Boot 2.X版本使用elastic-job-spring-boot-starter 1.0.2版本，配置前缀为elastic.job.xxx.xxx
 
 Elastic-Job Spring Boot 自动集成，只需要一个注解即可发布Job。
 
