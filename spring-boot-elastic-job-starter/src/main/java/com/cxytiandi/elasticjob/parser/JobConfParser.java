@@ -40,8 +40,6 @@ import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
  *
  * @about http://cxytiandi.com/about
  */
-@Component
-@Configuration
 public class JobConfParser implements ApplicationContextAware {
 	
 	private Logger logger = LoggerFactory.getLogger(JobConfParser.class);
