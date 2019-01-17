@@ -16,7 +16,7 @@ Elastic-Job官方提供了基于Spring和Java代码2种方式的任务配置，�
 
 ## 增加elastic-job-spring-boot-starter的Maven依赖
 
-目前最新版本1.0.1
+目前最新版本1.0.4
 
 第一步添加仓库地址：
 ```
@@ -32,7 +32,7 @@ Elastic-Job官方提供了基于Spring和Java代码2种方式的任务配置，�
 <dependency>
 	    <groupId>com.github.yinjihuan</groupId>
 	    <artifactId>elastic-job-spring-boot-starter</artifactId>
-	    <version>1.0.1</version>
+	    <version>1.0.4</version>
 </dependency>
 ```
 
