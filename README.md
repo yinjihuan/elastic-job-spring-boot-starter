@@ -39,8 +39,8 @@ Elastic-Job官方提供了基于Spring和Java代码2种方式的任务配置，�
 ## 增加Zookeeper注册中心的配置
 
 ```
-elasticJob.zk.serverLists=192.168.10.47:2181
-elasticJob.zk.namespace=cxytiandi_job2
+elastic.job.zk.serverLists=192.168.10.47:2181
+elastic.job.zk.namespace=cxytiandi_job2
 ```
 Zookeeper配置的前缀是elasticJob.zk，详细的属性配置请查看[ZookeeperProperties](https://github.com/yinjihuan/elastic-job-spring-boot-starter/blob/master/spring-boot-elastic-job-starter/src/main/java/com/cxytiandi/elasticjob/autoconfigure/ZookeeperProperties.java)
 
@@ -166,18 +166,18 @@ public class BeanConfig {
 剩下的配置都可以在属性文件中进行配置，格式为elasticJob.任务名.配置属性=属性值
 
 ```
-elasticJob.MySimpleJob.cron=0/10 * * * * ?
-elasticJob.MySimpleJob.overwrite=true
-elasticJob.MySimpleJob.shardingTotalCount=1
-elasticJob.MySimpleJob.shardingItemParameters=0=0,1=1
-elasticJob.MySimpleJob.jobParameter=test
-elasticJob.MySimpleJob.failover=true
-elasticJob.MySimpleJob.misfire=true
-elasticJob.MySimpleJob.description=simple job
-elasticJob.MySimpleJob.monitorExecution=false
-elasticJob.MySimpleJob.listener=com.cxytiandi.job.core.MessageElasticJobListener
-elasticJob.MySimpleJob.jobExceptionHandler=com.cxytiandi.job.core.CustomJobExceptionHandler
-elasticJob.MySimpleJob.disabled=true
+elastic.job.MySimpleJob.cron=0/10 * * * * ?
+elastic.job.MySimpleJob.overwrite=true
+elastic.job.MySimpleJob.shardingTotalCount=1
+elastic.job.MySimpleJob.shardingItemParameters=0=0,1=1
+elastic.job.MySimpleJob.jobParameter=test
+elastic.job.MySimpleJob.failover=true
+elastic.job.MySimpleJob.misfire=true
+elastic.job.MySimpleJob.description=simple job
+elastic.job.MySimpleJob.monitorExecution=false
+elastic.job.MySimpleJob.listener=com.cxytiandi.job.core.MessageElasticJobListener
+elastic.job.MySimpleJob.jobExceptionHandler=com.cxytiandi.job.core.CustomJobExceptionHandler
+elastic.job.MySimpleJob.disabled=true
 ```
 
 ## Script任务使用说明
@@ -203,9 +203,9 @@ public class MyScriptJob implements ScriptJob {
 配置：
 
 ```
-elasticJob.MyScriptJob.cron=0/10 * * * * ?
-elasticJob.MyScriptJob.overwrite=true
-elasticJob.MyScriptJob.scriptCommandLine=D:\\apache-tomcat-addrepo-allcity\\bin\\startup.bat
+elastic.job.MyScriptJob.cron=0/10 * * * * ?
+elastic.job.MyScriptJob.overwrite=true
+elastic.job.MyScriptJob.scriptCommandLine=D:\\apache-tomcat-addrepo-allcity\\bin\\startup.bat
 ```
 
 ##  Spring XML配置代码示例
