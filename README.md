@@ -217,6 +217,10 @@ elastic.job.MyScriptJob.scriptCommandLine=D:\\apache-tomcat-addrepo-allcity\\bin
 - 尹吉欢 1304489315@qq.com
 - 博客 http://cxytiandi.com/blogs/yinjihuan
 
-更多技术分享请关注微信公众号：猿天地
+### 欢迎加入我的知识星球，一起交流技术，免费学习猿天地的课程（http://cxytiandi.com/course）
 
-![image.png](http://upload-images.jianshu.io/upload_images/2685774-da01a73d0cfc3f35.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+## PS：目前星球中正在星主的带领下组队学习Sentinel，等你哦！
+
+![微信扫码加入猿天地知识星球](https://upload-images.jianshu.io/upload_images/2685774-b11318670c1457fa.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+![猿天地](https://upload-images.jianshu.io/upload_images/2685774-17a60e1ead7fd232.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
