@@ -1,0 +1,60 @@
+{
+  "properties": [
+    {
+      "name": "elastic.job.zk.serverLists",
+      "type": "java.lang.String",
+      "description": "Zoo keeper server list, delimited by ,",
+      "sourceType": "com.cxytiandi.elasticjob.autoconfigure.ZookeeperProperties",
+      "defaultValue": "localhost:2181"
+    },
+    {
+      "name": "elastic.job.zk.namespace",
+      "type": "java.lang.String",
+      "description": "Namespace for the jobs",
+      "sourceType": "com.cxytiandi.elasticjob.autoconfigure.ZookeeperProperties",
+      "defaultValue": "elastic-job"
+    },
+    {
+      "name": "elastic.job.zk.baseSleepTimeMilliseconds",
+      "type": "java.lang.Integer",
+      "description": "等待重试的间隔时间的初始值. 单位毫秒",
+      "sourceType": "com.cxytiandi.elasticjob.autoconfigure.ZookeeperProperties",
+      "defaultValue": 1000
+    },
+    {
+      "name": "elastic.job.zk.maxSleepTimeMilliseconds",
+      "type": "java.lang.Integer",
+      "description": "等待重试的间隔时间的最大值. 单位毫秒",
+      "sourceType": "com.cxytiandi.elasticjob.autoconfigure.ZookeeperProperties",
+      "defaultValue": 3000
+    },
+    {
+      "name": "elastic.job.zk.maxRetries",
+      "type": "java.lang.Integer",
+      "description": "最大重试次数",
+      "sourceType": "com.cxytiandi.elasticjob.autoconfigure.ZookeeperProperties",
+      "defaultValue": 3000
+    },
+    {
+      "name": "elastic.job.zk.sessionTimeoutMilliseconds",
+      "type": "java.lang.Integer",
+      "description": "会话超时时间. 单位毫秒",
+      "sourceType": "com.cxytiandi.elasticjob.autoconfigure.ZookeeperProperties",
+      "defaultValue": 0
+    },
+    {
+      "name": "elastic.job.zk.connectionTimeoutMilliseconds",
+      "type": "java.lang.Integer",
+      "description": "连接超时时间. 单位毫秒",
+      "sourceType": "com.cxytiandi.elasticjob.autoconfigure.ZookeeperProperties",
+      "defaultValue": 0
+    },
+    {
+      "name": "elastic.job.zk.digest",
+      "type": "java.lang.String",
+      "description": "连接Zookeeper的权限令牌. 缺省为不需要权限验证",
+      "sourceType": "com.cxytiandi.elasticjob.autoconfigure.ZookeeperProperties",
+      "defaultValue": null
+    }
+  ]
+}

@@ -25,7 +25,6 @@ public class JobParserAutoConfiguration {
 	
 	/**
 	 * 初始化Zookeeper注册中心
-	 * @param config
 	 * @return
 	 */
 	@Bean(initMethod = "init")
