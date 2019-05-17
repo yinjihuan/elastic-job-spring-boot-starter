@@ -32,7 +32,7 @@ Elastic-Job官方提供了基于Spring和Java代码2种方式的任务配置，�
 <dependency>
 	    <groupId>com.github.yinjihuan</groupId>
 	    <artifactId>elastic-job-spring-boot-starter</artifactId>
-	    <version>1.0.4</version>
+	    <version>1.0.5</version>
 </dependency>
 ```
 
@@ -46,7 +46,7 @@ Zookeeper配置的前缀是elasticJob.zk，详细的属性配置请查看[Zookee
 
 ## 开启Elastic-Job自动配置
 
-引入了依赖默认会开启自动配置，备用方案（开启自动配置只需要在Spring Boot的启动类上增加@EnableElasticJob注解）
+开启自动配置只需要在Spring Boot的启动类上增加@EnableElasticJob注解
 
 ```
 import java.util.concurrent.CountDownLatch;
