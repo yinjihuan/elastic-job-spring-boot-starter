@@ -1,6 +1,7 @@
 package com.cxytiandi.elasticjob.parser;
 
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -54,13 +56,20 @@ public class JobConfParser implements ApplicationContextAware {
 	@Autowired(required=false)
 	private JobService jobService;
 	
+	private List<String> jobTypeNameList = Arrays.asList("SimpleJob", "DataflowJob", "ScriptJob");
+	
 	public void setApplicationContext(ApplicationContext ctx) throws BeansException {
 		environment = ctx.getEnvironment();
 		Map<String, Object> beanMap = ctx.getBeansWithAnnotation(ElasticJobConf.class);
 		for (Object confBean : beanMap.values()) {
 			Class<?> clz = confBean.getClass();
-			String jobTypeName = confBean.getClass().getInterfaces()[0].getSimpleName();
-			ElasticJobConf conf = clz.getAnnotation(ElasticJobConf.class);
+			// 解决CGLIB代理问题
+			String jobTypeName = clz.getInterfaces()[0].getSimpleName();
+			if (!jobTypeNameList.contains(jobTypeName)) {
+				jobTypeName = clz.getSuperclass().getInterfaces()[0].getSimpleName();
+				clz = clz.getSuperclass();
+			}
+			ElasticJobConf conf = AnnotationUtils.findAnnotation(clz, ElasticJobConf.class);
 			
 			String jobClass = clz.getName();
 			String jobName = conf.name();
