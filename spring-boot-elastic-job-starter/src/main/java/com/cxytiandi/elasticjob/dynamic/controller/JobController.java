@@ -57,7 +57,7 @@ public class JobController {
 			return result;
 		}
 		
-		if ("ScriptJob".equals(job.getJobType())) {
+		if ("SCRIPT".equals(job.getJobType())) {
 			if (!StringUtils.hasText(job.getScriptCommandLine())) {
 				result.put("status", false);
 				result.put("message", "scriptCommandLine not null");
