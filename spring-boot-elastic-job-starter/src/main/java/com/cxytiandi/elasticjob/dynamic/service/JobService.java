@@ -112,8 +112,8 @@ public class JobService {
         
         factory.addConstructorArgValue(elasticJobListeners);
         DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory)ctx.getAutowireCapableBeanFactory();
-		defaultListableBeanFactory.registerBeanDefinition("SpringJobScheduler", factory.getBeanDefinition());
-		SpringJobScheduler springJobScheduler = (SpringJobScheduler) ctx.getBean("SpringJobScheduler");
+		defaultListableBeanFactory.registerBeanDefinition("SpringJobScheduler"+job.getJobName(), factory.getBeanDefinition());
+		SpringJobScheduler springJobScheduler = (SpringJobScheduler) ctx.getBean("SpringJobScheduler"+job.getJobName());
 		springJobScheduler.init();
 		logger.info("【" + job.getJobName() + "】\t" + job.getJobClass() + "\tinit success");
 	}
