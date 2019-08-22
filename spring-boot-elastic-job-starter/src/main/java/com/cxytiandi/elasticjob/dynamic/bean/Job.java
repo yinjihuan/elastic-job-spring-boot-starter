@@ -1,8 +1,8 @@
 package com.cxytiandi.elasticjob.dynamic.bean;
 
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 public class Job {
 	
 /*********************DataflowJobConfiguration START********************/
